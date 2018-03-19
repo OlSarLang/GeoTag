@@ -1,0 +1,10 @@
+* Concept design- Done
+19-23/3 Fix functions and methods so that the basics are working.
+24/3 Implement gps
+25-28/3 Markers and fields
+29/3-4/4 Saving map locations and creating a static database
+5-7/4 Connect the gps to the functions
+8-12/4 Firebase and sharing database
+13/4 Finalize design
+14/4 Bugfixes and database tests
+15-25/4 Leeway

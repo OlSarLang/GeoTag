@@ -8,6 +8,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -17,7 +21,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_LOCATION = 1;
@@ -25,11 +29,49 @@ public class MainActivity extends AppCompatActivity {
     LocationRequest locationRequest;
     LocationCallback locationCallback;
 
+    Button signInAskButton;
+    Button signUpAskButton;
+    RelativeLayout signIn;
+    View mView;
+
+    EditText passwordInput;
+    EditText usernameInput;
+    private String username;
+    private String password;
+    //MapFragment backgroundMap = (MapFragment) getFragmentManager().findFragmentById(R.id.mapViewBack);
+
+
+    public void signInButtonClicked(View view){
+        signInAskButton.setVisibility(View.INVISIBLE);
+        signUpAskButton.setVisibility(View.INVISIBLE);
+        signIn.setVisibility(View.VISIBLE);
+    }
+
+    public void signUpButtonClicked(View view){
+        signInAskButton.setVisibility(View.INVISIBLE);
+        signUpAskButton.setVisibility(View.INVISIBLE);
+        signIn.setVisibility(View.VISIBLE);
+    }
+
+    public void signInClicked(View view){
+        //checkLogin(username, password);
+        password = passwordInput.getText().toString();
+        username = usernameInput.getText().toString();
+        System.out.println("user: " + username + "\npass: " + password);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
+        signInAskButton = findViewById(R.id.signInAsk);
+        signUpAskButton = findViewById(R.id.signUpAsk);
+        signIn = findViewById(R.id.signInLayout);
+
+        usernameInput = findViewById(R.id.username);
+        passwordInput = findViewById(R.id.password);
+
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
@@ -68,18 +110,19 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    public void checkLogin(String username, String password){
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-
         startLocationUpdates();
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-
         stopLocationUpdates();
     }
 
@@ -98,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
         if ( requestCode == REQUEST_LOCATION ) {
             if (grantResult.length == 1 && grantResult[0] == PackageManager.PERMISSION_GRANTED) {
                 locationProvider.requestLocationUpdates(locationRequest, locationCallback, null);
-
             } else {
                 //permission denied by user
             }
@@ -111,5 +153,4 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
 }

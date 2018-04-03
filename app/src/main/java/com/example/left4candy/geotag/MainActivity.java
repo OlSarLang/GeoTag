@@ -1,17 +1,22 @@
 package com.example.left4candy.geotag;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -19,9 +24,16 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity{
+
+    private FirebaseAuth mAuth;
+    private ProgressDialog progressDialog;
 
     private GoogleApiClient mGoogleApiClient;
     private static final int REQUEST_LOCATION = 1;
@@ -31,12 +43,16 @@ public class MainActivity extends AppCompatActivity{
 
     Button signInAskButton;
     Button signUpAskButton;
-    RelativeLayout signIn;
+    RelativeLayout signInLayout;
+    RelativeLayout signUpLayout;
     View mView;
 
     EditText passwordInput;
-    EditText usernameInput;
-    private String username;
+    EditText emailInput;
+
+    EditText createPasswordInput;
+    EditText createEmailInput;
+    private String email;
     private String password;
     //MapFragment backgroundMap = (MapFragment) getFragmentManager().findFragmentById(R.id.mapViewBack);
 
@@ -44,33 +60,50 @@ public class MainActivity extends AppCompatActivity{
     public void signInButtonClicked(View view){
         signInAskButton.setVisibility(View.INVISIBLE);
         signUpAskButton.setVisibility(View.INVISIBLE);
-        signIn.setVisibility(View.VISIBLE);
+        signInLayout.setVisibility(View.VISIBLE);
     }
 
     public void signUpButtonClicked(View view){
         signInAskButton.setVisibility(View.INVISIBLE);
         signUpAskButton.setVisibility(View.INVISIBLE);
-        signIn.setVisibility(View.VISIBLE);
+        signUpLayout.setVisibility(View.VISIBLE);
     }
 
     public void signInClicked(View view){
-        //checkLogin(username, password);
+        //checkLogin(email, password);
         password = passwordInput.getText().toString();
-        username = usernameInput.getText().toString();
-        System.out.println("user: " + username + "\npass: " + password);
+        email = emailInput.getText().toString();
+        System.out.println("user: " + email + "\npass: " + password);
+    }
+
+    public void signUpClicked(View view){
+        registerUser();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null){
+            //Start next activity if user already logged in
+            finish();
+            startActivity(new Intent(getApplicationContext(), GeoTagActivity.class));
+        }
+
+        progressDialog = new ProgressDialog(this);
+
         setContentView(R.layout.activity_main);
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
         signInAskButton = findViewById(R.id.signInAsk);
         signUpAskButton = findViewById(R.id.signUpAsk);
-        signIn = findViewById(R.id.signInLayout);
+        signInLayout = findViewById(R.id.signInLayout);
+        signUpLayout = findViewById(R.id.signUpLayout);
 
-        usernameInput = findViewById(R.id.username);
+        emailInput = findViewById(R.id.username);
         passwordInput = findViewById(R.id.password);
+        createEmailInput = findViewById(R.id.signUpEmail);
+        createEmailInput = findViewById(R.id.signUpPassword);
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -110,8 +143,71 @@ public class MainActivity extends AppCompatActivity{
         };
     }
 
-    public void checkLogin(String username, String password){
+    private void userLogin(){
+        String email = createEmailInput.getText().toString().trim();
+        String password = createPasswordInput.getText().toString().trim();
 
+        if(TextUtils.isEmpty(email)){
+            //email is empty
+            Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(password)){
+            Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        progressDialog.setMessage("Login in...");
+        progressDialog.show();
+
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        progressDialog.dismiss();
+                        if(task.isSuccessful()){
+                            //User is successfully registered, and starting next activity
+                            Toast.makeText(MainActivity.this, "Sign in successful", Toast.LENGTH_SHORT).show();
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), GeoTagActivity.class));
+                        }else{
+                            Toast.makeText(MainActivity.this, "Could not sign in... please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void registerUser(){
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+
+        if(TextUtils.isEmpty(email)){
+            //email is empty
+            Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(TextUtils.isEmpty(password)){
+            Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        progressDialog.setMessage("Registering User...");
+        progressDialog.show();
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            //User is successfully registered, and starting next activity
+                            Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), GeoTagActivity.class));
+                        }else{
+                            Toast.makeText(MainActivity.this, "Could not register... please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     @Override

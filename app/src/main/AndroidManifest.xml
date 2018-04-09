@@ -25,7 +25,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:hardwareAccelerated="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,11 +41,19 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/. 
         -->
+
+        <activity
+            android:name=".GeoTagActivity"
+            android:hardwareAccelerated="true" >
+        </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBAKJb970-2YN5O_UbaEJLIPhpqYgFqK3M" />
-
-        <activity android:name=".GeoTagActivity"></activity>
+            android:value="AIzaSyCZfT3m6s8an0kz6F-nNBl_pEf9ykXDSs0" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
+
 
 </manifest>

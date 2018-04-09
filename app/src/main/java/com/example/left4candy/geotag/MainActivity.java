@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity{
 
     EditText createPasswordInput;
     EditText createEmailInput;
-    //MapFragment backgroundMap = (MapFragment) getFragmentManager().findFragmentById(R.id.mapViewBack);
+    //GeoTagMapFragment backgroundMap = (GeoTagMapFragment) getFragmentManager().findFragmentById(R.id.mapViewBack);
 
 
     public void signInButtonClicked(View view){

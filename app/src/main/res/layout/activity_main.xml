@@ -11,10 +11,11 @@
         android:id="@+id/mapViewBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:contentDescription="@string/app_name"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/back"
-        android:layout_centerHorizontal="true"/>
+        android:tint="@color/common_google_signin_btn_text_dark_disabled"
+        app:srcCompat="@drawable/back" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"

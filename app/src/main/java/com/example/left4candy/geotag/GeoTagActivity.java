@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,17 +21,27 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class GeoTagActivity extends AppCompatActivity {
+public class GeoTagActivity extends AppCompatActivity{
 
     private FirebaseAuth mAuth;
     LocationRequest locationRequest;
     LocationCallback locationCallback;
     private static final int REQUEST_LOCATION = 1;
     private FusedLocationProviderClient locationProvider;
+    //SupportMapFragment sMapFragment;
+
+    private SectionsPageAdapter mSectionsPageAdapter;
+    private ViewPager mViewPager;
 
     private TextView textViewUserEmail;
 
@@ -38,6 +50,17 @@ public class GeoTagActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_tag);
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
+        //sMapFragment = SupportMapFragment.newInstance();
+
+        FragmentManager fm = getFragmentManager();
+        //sMapFragment.getMapAsync(this);
+        //fm.beginTransaction().replace(R.id.map, new GeoTagMapFragment());
+
+        mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+        mViewPager = findViewById(R.id.fragmentView);
+        setupViewPager(mViewPager);
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null){
@@ -53,32 +76,21 @@ public class GeoTagActivity extends AppCompatActivity {
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED) {
-
             Log.d("MainActivity", "no permission");
-
             // ask for permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION );
-
-
         } else {
-
             locationProvider.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
                         double lat = location.getLatitude();
                         double lng = location.getLongitude();
-
                         Log.d("MainActivity", "lat: " + lat + " ,long: " + lng);
                     }
-
                 }
             });
         }
-
-        FragmentManager fm = getFragmentManager();
-        fm.beginTransaction().replace(R.id.map, new MapFragment().commit());
-
         createLocationRequest();
         locationCallback = new LocationCallback() {
             @Override
@@ -123,6 +135,13 @@ public class GeoTagActivity extends AppCompatActivity {
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    private void setupViewPager(ViewPager viewPager){
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
+        adapter.addFragment(new GeoTagMapFragment(), "GPS Map");
+        //adapter.addFragment(new PictureFragment(), "TAB2");
+        viewPager.setAdapter(adapter);
     }
 
     @Override

@@ -1,57 +1,69 @@
 package com.example.left4candy.geotag;
 
-/*
-public class MapFragment extends Fragment implements OnMapReadyCallback{
+
+import android.app.Fragment;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+
+public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     MapView mapView;
-    GoogleMap mMap;
+    View mView;
     double lat;
     double lng;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.activity_main, container, false);
-        return v;
-
-        // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
-        try{
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mainMap);
-            mapFragment.getMapAsync(MapFragment.this);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return v;
+        return inflater.inflate(R.layout.mapfragment, container, false);
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        MapFragment mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment. Här ligger jag
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.mapViewBack);
-
-        //Gets the MapView from the XML layou and creates it
-        mapView = (MapView) this.findViewById(R.id.mapViewBack);
-        mapView.onCreate(savedInstanceState);
-
-        //Gets the GoogleMap from the MapView and does initialization
-        mMap = mapView.getMapAsync(OnMapReadyCallback);
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        mMap.setMyLocationEnabled(false);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng nacka = new LatLng(lat, lng);
-        mMap = googleMap;
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(nacka));
+        LatLng nacka = new LatLng(59.345396, 18.023425);
+
+        MapsInitializer.initialize(getContext());
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(nacka, 13));
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        googleMap.setMyLocationEnabled(true);
     }
 
     @Override
     public void onResume() {
         mapView.onResume();
         super.onResume();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
     }
 
     @Override
@@ -65,5 +77,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         super.onLowMemory();
         mapView.onLowMemory();
     }
+
 }
-*/

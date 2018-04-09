@@ -52,8 +52,6 @@ public class MainActivity extends AppCompatActivity{
 
     EditText createPasswordInput;
     EditText createEmailInput;
-    private String email;
-    private String password;
     //MapFragment backgroundMap = (MapFragment) getFragmentManager().findFragmentById(R.id.mapViewBack);
 
 
@@ -63,17 +61,26 @@ public class MainActivity extends AppCompatActivity{
         signInLayout.setVisibility(View.VISIBLE);
     }
 
+    public void signInBackButtonClicked(View view){
+        signInLayout.setVisibility(View.INVISIBLE);
+        signInAskButton.setVisibility(View.VISIBLE);
+        signUpAskButton.setVisibility(View.VISIBLE);
+    }
+
     public void signUpButtonClicked(View view){
         signInAskButton.setVisibility(View.INVISIBLE);
         signUpAskButton.setVisibility(View.INVISIBLE);
         signUpLayout.setVisibility(View.VISIBLE);
     }
 
+    public void signUpBackButtonClicked(View view){
+        signInAskButton.setVisibility(View.VISIBLE);
+        signUpAskButton.setVisibility(View.VISIBLE);
+        signUpLayout.setVisibility(View.INVISIBLE);
+    }
+
     public void signInClicked(View view){
-        //checkLogin(email, password);
-        password = passwordInput.getText().toString();
-        email = emailInput.getText().toString();
-        System.out.println("user: " + email + "\npass: " + password);
+        userLogin();
     }
 
     public void signUpClicked(View view){
@@ -103,7 +110,7 @@ public class MainActivity extends AppCompatActivity{
         emailInput = findViewById(R.id.username);
         passwordInput = findViewById(R.id.password);
         createEmailInput = findViewById(R.id.signUpEmail);
-        createEmailInput = findViewById(R.id.signUpPassword);
+        createPasswordInput = findViewById(R.id.signUpPassword);
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -120,7 +127,6 @@ public class MainActivity extends AppCompatActivity{
             locationProvider.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
-
                     if (location != null) {
                         double lat = location.getLatitude();
                         double lng = location.getLongitude();
@@ -144,8 +150,8 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void userLogin(){
-        String email = createEmailInput.getText().toString().trim();
-        String password = createPasswordInput.getText().toString().trim();
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
 
         if(TextUtils.isEmpty(email)){
             //email is empty
@@ -178,8 +184,8 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void registerUser(){
-        String email = emailInput.getText().toString().trim();
-        String password = passwordInput.getText().toString().trim();
+        String email = createEmailInput.getText().toString().trim();
+        String password = createPasswordInput.getText().toString().trim();
 
         if(TextUtils.isEmpty(email)){
             //email is empty

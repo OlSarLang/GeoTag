@@ -92,6 +92,13 @@
             tools:layout_editor_absoluteX="97dp"
             tools:layout_editor_absoluteY="82dp" />
 
+        <Button
+            android:id="@+id/signInBackButton"
+            android:layout_width="34dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_menu_revert"
+            android:onClick="signInBackButtonClicked" />
+
         <LinearLayout
             android:id="@+id/linera"
             android:layout_width="match_parent"
@@ -186,6 +193,13 @@
             app:srcCompat="@color/common_google_signin_btn_text_dark_default"
             tools:layout_editor_absoluteX="97dp"
             tools:layout_editor_absoluteY="82dp" />
+
+        <Button
+            android:id="@+id/signUpBackButton"
+            android:layout_width="34dp"
+            android:layout_height="30dp"
+            android:background="@android:drawable/ic_menu_revert"
+            android:onClick="signUpBackButtonClicked" />
 
         <LinearLayout
             android:id="@+id/linera2"

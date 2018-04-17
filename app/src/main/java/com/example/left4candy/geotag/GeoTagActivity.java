@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class GeoTagActivity extends AppCompatActivity{
 
+    
     private FirebaseAuth mAuth;
     LocationRequest locationRequest;
     LocationCallback locationCallback;
@@ -141,9 +142,9 @@ public class GeoTagActivity extends AppCompatActivity{
     }
 
     private void setupViewPager(ViewPager viewPager){
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addMapFragment(geoTagMapFragment, "GPS Map");
-        adapter.addPictureFragment(new PictureFragment(), "TAB2");
+        adapter.addPictureFragment(new PictureFragment(), "Static");
         viewPager.setAdapter(adapter);
     }
 

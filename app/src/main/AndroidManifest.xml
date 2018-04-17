@@ -48,11 +48,12 @@
         </activity>
 
         <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCZfT3m6s8an0kz6F-nNBl_pEf9ykXDSs0" />
-        <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyCZfT3m6s8an0kz6F-nNBl_pEf9ykXDSs0" />
     </application>
 
 

@@ -1,9 +1,10 @@
 package com.example.left4candy.geotag;
 
 import android.Manifest;
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Picture;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -38,7 +39,8 @@ public class GeoTagActivity extends AppCompatActivity{
     LocationCallback locationCallback;
     private static final int REQUEST_LOCATION = 1;
     private FusedLocationProviderClient locationProvider;
-    //SupportMapFragment sMapFragment;
+    GeoTagMapFragment geoTagMapFragment;
+    PictureFragment pictureFragment;
 
     private SectionsPageAdapter mSectionsPageAdapter;
     private ViewPager mViewPager;
@@ -50,11 +52,12 @@ public class GeoTagActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_tag);
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
-        //sMapFragment = SupportMapFragment.newInstance();
+        //geoTagMapFragment = GeoTagMapFragment.newInstance();
 
-        FragmentManager fm = getFragmentManager();
-        //sMapFragment.getMapAsync(this);
-        //fm.beginTransaction().replace(R.id.map, new GeoTagMapFragment());
+        pictureFragment = new PictureFragment();
+        geoTagMapFragment = new GeoTagMapFragment();
+        //FragmentManager fm = getFragmentManager();
+        //fm.beginTransaction().replace(R.id.map, sMapFragment);
 
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.fragmentView);
@@ -138,9 +141,9 @@ public class GeoTagActivity extends AppCompatActivity{
     }
 
     private void setupViewPager(ViewPager viewPager){
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new GeoTagMapFragment(), "GPS Map");
-        //adapter.addFragment(new PictureFragment(), "TAB2");
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getFragmentManager());
+        adapter.addMapFragment(geoTagMapFragment, "GPS Map");
+        adapter.addPictureFragment(new PictureFragment(), "TAB2");
         viewPager.setAdapter(adapter);
     }
 

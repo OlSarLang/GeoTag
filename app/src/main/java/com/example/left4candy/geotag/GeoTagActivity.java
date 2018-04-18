@@ -1,19 +1,27 @@
 package com.example.left4candy.geotag;
 
 import android.Manifest;
-import android.support.v4.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Picture;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,19 +30,25 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 public class GeoTagActivity extends AppCompatActivity{
 
-    
+    private static final int PICK_IMAGE_REQUEST = 1234;
+    private ImageButton mSelectImage;
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference mStorage;
+    private static final int GALLERY_INTENT = 2;
+    private Uri filePath;
+    private ImageView staticPicture;
+
     private FirebaseAuth mAuth;
     LocationRequest locationRequest;
     LocationCallback locationCallback;
@@ -52,6 +66,9 @@ public class GeoTagActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geo_tag);
+        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View pView = inflater.inflate(R.layout.picturefragment, null);
+
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
         //geoTagMapFragment = GeoTagMapFragment.newInstance();
 
@@ -63,9 +80,27 @@ public class GeoTagActivity extends AppCompatActivity{
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.fragmentView);
         setupViewPager(mViewPager);
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels){}
+            @Override
+            public void onPageSelected(int position) {
+                   if(position==0){
+                    mSelectImage.setVisibility(View.INVISIBLE);
+                   }else if(position==1){
+                    mSelectImage.setVisibility(View.VISIBLE);
+                   }
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        staticPicture = pView.findViewById(R.id.pictureView);
+        mStorage = FirebaseStorage.getInstance().getReference();
+        mSelectImage = findViewById(R.id.chooseImage);
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null){
             finish();
@@ -144,10 +179,74 @@ public class GeoTagActivity extends AppCompatActivity{
     private void setupViewPager(ViewPager viewPager){
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addMapFragment(geoTagMapFragment, "GPS Map");
-        adapter.addPictureFragment(new PictureFragment(), "Static");
+        adapter.addPictureFragment(pictureFragment, "Static");
         viewPager.setAdapter(adapter);
+
     }
 
+    private void uploadFile(){
+
+        if(filePath != null) {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            StorageReference riversRef = mStorage.child("Photos").child(filePath.getLastPathSegment());
+            riversRef.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(), "File Uploaded and ready for use :)", Toast.LENGTH_LONG).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            progressDialog.dismiss();
+                            Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred())/taskSnapshot.getTotalByteCount();
+                            progressDialog.setMessage((int) progress + "% Uploaded...");
+                        }
+                    });
+        }else{
+
+        }
+    }
+
+    public void chooseImageClicked(View view){
+        try{
+            if(ActivityCompat.checkSelfPermission(GeoTagActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(GeoTagActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, PICK_IMAGE_REQUEST);
+            }else{
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select an Image"), PICK_IMAGE_REQUEST);
+            }
+    }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+            filePath = data.getData();
+
+            try{
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                uploadFile();
+                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                staticPicture.setBackgroundDrawable(bitmapDrawable);
+            } catch(java.io.IOException e){
+                e.printStackTrace();
+    }
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();

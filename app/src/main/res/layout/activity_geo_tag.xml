@@ -48,6 +48,18 @@
         android:elevation="6dp"
         app:srcCompat="@drawable/geotag" />
 
+    <ImageButton
+        android:id="@+id/chooseImage"
+        android:layout_width="37dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="11dp"
+        android:layout_marginTop="128dp"
+        android:onClick="chooseImageClicked"
+        android:visibility="invisible"
+        app:srcCompat="@android:drawable/ic_menu_gallery" />
+
     <Button
         android:id="@+id/button4"
         android:layout_width="66dp"

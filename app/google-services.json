@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "694009504459",
+    "firebase_url": "https://geotag-1520973552723.firebaseio.com",
+    "project_id": "geotag-1520973552723",
+    "storage_bucket": "geotag-1520973552723.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:694009504459:android:ec5ce19fef558e63",
+        "android_client_info": {
+          "package_name": "com.example.left4candy.geotag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "694009504459-qscpqupfi5qp2gn6057cj5mk73poouf5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.left4candy.geotag",
+            "certificate_hash": "626c3c1a0244188a1f75677f7aa63e750780d186"
+          }
+        },
+        {
+          "client_id": "694009504459-6omhij1k44dni7unnsnl9psbup1i1s6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBa3uIqI4udcrxP8j51s6CyiYHV0p3OI4I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "694009504459-6omhij1k44dni7unnsnl9psbup1i1s6v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -30,4 +30,8 @@
     <string name="edittitlehere">Type your Title here</string>
     <string name="edittitleempty">Please give your database a title :)</string>
     <string name="edittitlechanged">Title is now changed</string>
+    <string name="nameChange">Press here to change name</string>
+    <string name="green">Green</string>
+    <string name="red">Red</string>
+    <string name="markeradded">Marker added</string>
 </resources>

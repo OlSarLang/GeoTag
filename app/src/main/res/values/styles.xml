@@ -8,6 +8,9 @@
         <item name="colorAccent">@color/primaryLightColor</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="colorControlNormal">#c5c5c5</item>
+        <item name="colorControlActivated">#e203</item>
+        <item name="colorControlHighlight">#e203</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

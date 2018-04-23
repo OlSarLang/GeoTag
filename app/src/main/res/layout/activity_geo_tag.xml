@@ -66,7 +66,6 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/toolbar2"
         android:layout_centerHorizontal="true"
-        android:hint="@string/edittitlehere"
         android:onClick="changeDataBaseName"
         android:textAlignment="center"
         android:textSize="24sp" />

@@ -61,12 +61,12 @@ public class GeoTagActivity extends AppCompatActivity {
     private ImageView staticPicture;
 
     TextView databaseNameTextView;
-    private TitleName title;
+    private TitleName title = new TitleName();
     String tempTitle;
 
     FirebaseUser user = mAuth.getCurrentUser();
     private String userID = user.getUid();
-    private DatabaseReference titleNameRef = mDatabase.child("Users").child(userID);
+    private DatabaseReference titleNameRef = mDatabase.child("Users").child(userID).child("title");
 
     LocationRequest locationRequest;
     LocationCallback locationCallback;
@@ -159,13 +159,10 @@ public class GeoTagActivity extends AppCompatActivity {
         titleNameRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    tempTitle = ds.getValue(String.class);
+                    tempTitle = dataSnapshot.getValue(String.class);
                     title.setTitle(tempTitle);
-                    databaseNameTextView.setText(tempTitle);
-
-                    Log.d("TAG", tempTitle);
-                }
+                    databaseNameTextView.setText(title.getTitle());
+                    Log.d("TAG", title.getTitle());
             }
 
             @Override
@@ -307,8 +304,10 @@ public class GeoTagActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(!aTitle.getText().toString().isEmpty()){
                     Toast.makeText(GeoTagActivity.this, R.string.edittitlechanged, Toast.LENGTH_SHORT).show();
-                    String tempTitleTwo = tempTitle;
+                    String tempTitleTwo = aTitle.getText().toString();
+                    tempTitle = tempTitleTwo;
                     titleNameRef.setValue(tempTitleTwo);
+                    System.out.println(tempTitleTwo);
                     dialog.dismiss();
                 }else{
                     Toast.makeText(GeoTagActivity.this, R.string.edittitleempty, Toast.LENGTH_SHORT).show();

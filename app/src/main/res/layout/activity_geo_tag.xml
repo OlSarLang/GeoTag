@@ -19,7 +19,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="46dp"
         android:layout_marginBottom="100dp"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
@@ -28,25 +28,14 @@
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="61dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/toolbar2"
-        android:textSize="20sp"
         android:layout_marginTop="-100dp"
-        android:background="@color/primaryColor">
+        android:background="@color/primaryColor"
+        android:textSize="20sp">
 
     </android.support.design.widget.TabLayout>
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="207dp"
-        android:layout_height="89dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:alpha="0.9"
-        android:contentDescription="@string/app_name"
-        android:elevation="6dp"
-        app:srcCompat="@drawable/geotag" />
 
     <ImageButton
         android:id="@+id/chooseImage"
@@ -70,5 +59,17 @@
         android:onClick="logoutButtonClicked"
         android:text="@string/Logout"
         android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/databaseNameTextView"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/toolbar2"
+        android:layout_centerHorizontal="true"
+        android:hint="@string/edittitlehere"
+        android:onClick="changeDataBaseName"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
 
 </RelativeLayout>

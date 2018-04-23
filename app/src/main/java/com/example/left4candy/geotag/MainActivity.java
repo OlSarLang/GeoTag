@@ -29,10 +29,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity{
 
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener firebaseAuthListener;
     private ProgressDialog progressDialog;
 
     private GoogleApiClient mGoogleApiClient;
@@ -207,6 +210,11 @@ public class MainActivity extends AppCompatActivity{
                         if(task.isSuccessful()){
                             //User is successfully registered, and starting next activity
                             Toast.makeText(MainActivity.this, "Registered Successfully", Toast.LENGTH_SHORT).show();
+                            String user_id = mAuth.getCurrentUser().getUid();
+                            final DatabaseReference current_user_id = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
+                            final DatabaseReference firstTitle = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id).child("title");
+                            current_user_id.setValue(true);
+                            firstTitle.setValue(getResources().getString(R.string.choose_title));
                             finish();
                             startActivity(new Intent(getApplicationContext(), GeoTagActivity.class));
                         }else{

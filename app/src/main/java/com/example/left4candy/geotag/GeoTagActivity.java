@@ -1,6 +1,7 @@
 package com.example.left4candy.geotag;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,28 +37,45 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-public class GeoTagActivity extends AppCompatActivity{
+public class GeoTagActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private static final int PICK_IMAGE_REQUEST = 1234;
-    private ImageButton mSelectImage;
     FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference mStorage;
+    private StorageReference mStorage = storage.getReference();
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference mDatabase = database.getReference();
+
     private static final int GALLERY_INTENT = 2;
     private Uri filePath;
     private ImageView staticPicture;
 
-    private FirebaseAuth mAuth;
+    TextView databaseNameTextView;
+    private TitleName title;
+    String tempTitle;
+
+    FirebaseUser user = mAuth.getCurrentUser();
+    private String userID = user.getUid();
+    private DatabaseReference titleNameRef = mDatabase.child("Users").child(userID);
+
     LocationRequest locationRequest;
     LocationCallback locationCallback;
     private static final int REQUEST_LOCATION = 1;
     private FusedLocationProviderClient locationProvider;
     GeoTagMapFragment geoTagMapFragment;
     PictureFragment pictureFragment;
+
+    private ImageButton mSelectImage;
 
     private SectionsPageAdapter mSectionsPageAdapter;
     private ViewPager mViewPager;
@@ -69,13 +89,12 @@ public class GeoTagActivity extends AppCompatActivity{
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View pView = inflater.inflate(R.layout.picturefragment, null);
 
+        databaseNameTextView = (TextView) findViewById(R.id.databaseNameTextView);
+
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
-        //geoTagMapFragment = GeoTagMapFragment.newInstance();
 
         pictureFragment = new PictureFragment();
         geoTagMapFragment = new GeoTagMapFragment();
-        //FragmentManager fm = getFragmentManager();
-        //fm.beginTransaction().replace(R.id.map, sMapFragment);
 
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.fragmentView);
@@ -99,15 +118,12 @@ public class GeoTagActivity extends AppCompatActivity{
         tabLayout.setupWithViewPager(mViewPager);
 
         staticPicture = pView.findViewById(R.id.pictureView);
-        mStorage = FirebaseStorage.getInstance().getReference();
+
         mSelectImage = findViewById(R.id.chooseImage);
-        mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() == null){
             finish();
             startActivity(new Intent(this, MainActivity.class));
         }
-
-        FirebaseUser user = mAuth.getCurrentUser();
 
         //textViewUserEmail = (TextView)  findViewById(R.id.textViewUserEmail);
         //textViewUserEmail.setText("Welcome " + user.getEmail());
@@ -139,7 +155,24 @@ public class GeoTagActivity extends AppCompatActivity{
                 }
             }
         };
-        //logoutButton = (Button) findViewById(R.id.logoutButton);
+
+        titleNameRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    tempTitle = ds.getValue(String.class);
+                    title.setTitle(tempTitle);
+                    databaseNameTextView.setText(tempTitle);
+
+                    Log.d("TAG", tempTitle);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void logoutButtonClicked(View view){
@@ -184,6 +217,10 @@ public class GeoTagActivity extends AppCompatActivity{
 
     }
 
+    private void getUploadedPicture(){
+
+    }
+
     private void uploadFile(){
 
         if(filePath != null) {
@@ -195,6 +232,7 @@ public class GeoTagActivity extends AppCompatActivity{
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             progressDialog.dismiss();
+                            Uri downloadUri = taskSnapshot.getDownloadUrl();
                             Toast.makeText(getApplicationContext(), "File Uploaded and ready for use :)", Toast.LENGTH_LONG).show();
                         }
                     })
@@ -239,13 +277,50 @@ public class GeoTagActivity extends AppCompatActivity{
 
             try{
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                uploadFile();
                 BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
                 staticPicture.setBackgroundDrawable(bitmapDrawable);
+                uploadFile();
             } catch(java.io.IOException e){
                 e.printStackTrace();
-    }
+            }
         }
+    }
+
+    public void changeDataBaseName(View view){
+        final AlertDialog.Builder aBuilder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.dialogdatabasetitle, null);
+        final EditText aTitle = (EditText) mView.findViewById(R.id.editTitle);
+        Button aCancelButton = (Button) mView.findViewById(R.id.cancel);
+        Button aSaveButton = (Button) mView.findViewById(R.id.save);
+        aBuilder.setView(mView);
+        final AlertDialog dialog = aBuilder.create();
+
+        aCancelButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        aSaveButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if(!aTitle.getText().toString().isEmpty()){
+                    Toast.makeText(GeoTagActivity.this, R.string.edittitlechanged, Toast.LENGTH_SHORT).show();
+                    String tempTitleTwo = tempTitle;
+                    titleNameRef.setValue(tempTitleTwo);
+                    dialog.dismiss();
+                }else{
+                    Toast.makeText(GeoTagActivity.this, R.string.edittitleempty, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        dialog.show();
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
     }
     @Override
     protected void onResume() {

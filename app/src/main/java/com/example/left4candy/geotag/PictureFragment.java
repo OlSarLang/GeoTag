@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 public class PictureFragment extends Fragment {
 
+
     public PictureFragment(){
     }
 

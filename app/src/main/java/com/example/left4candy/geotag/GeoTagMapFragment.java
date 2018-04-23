@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,6 +36,7 @@ import java.util.List;
 
 public class GeoTagMapFragment extends Fragment {
     private static final String TAG = "MapTabFragment";
+    //HEJ DAVID BEHÖVER GÖRA EN SÅN HÄR KOMMENTAR SÅ ATT JAG KAN COMMITA
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();

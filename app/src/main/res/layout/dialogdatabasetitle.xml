@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryColor"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp">
 
     <TextView
         android:id="@+id/choosetitle"
@@ -13,14 +15,17 @@
         android:layout_marginTop="20dp"
         android:text="@string/choose_title"
         android:textAlignment="center"
+        android:textColor="@color/primaryTextColor"
         android:textSize="24sp" />
 
     <EditText
         android:id="@+id/editTitle"
         android:layout_width="match_parent"
         android:layout_height="30dp"
+        android:layout_marginBottom="20dp"
         android:layout_marginTop="10dp"
         android:background="@color/primaryLightColor"
+        android:elevation="2dp"
         android:ems="10"
         android:hint="@string/edittitlehere"
         android:textAlignment="center" />
@@ -39,8 +44,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_red_light"
-            android:text="@string/cancel" />
+            android:background="@color/noboxColor"
+            android:elevation="6dp"
+            android:text="@string/cancel"
+            android:textColor="@color/primaryLightColor"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/save"
@@ -51,8 +59,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_green_light"
-            android:text="@string/save" />
+            android:background="@color/yesboxColor"
+            android:elevation="6dp"
+            android:text="@string/save"
+            android:textColor="@color/primaryTextColor"
+            android:textSize="18sp" />
     </LinearLayout>
 
 </LinearLayout>

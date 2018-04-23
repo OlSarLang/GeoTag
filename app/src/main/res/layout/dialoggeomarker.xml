@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryColor"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingEnd="20dp"
+    android:paddingStart="20dp">
 
     <EditText
         android:id="@+id/chooseTopName"
@@ -12,19 +14,22 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:background="@color/primaryLightColor"
+        android:elevation="2dp"
         android:hint="@string/nameChange"
         android:textAlignment="center"
         android:textSize="24sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="121dp"
+        android:layout_height="130dp"
+        android:layout_marginBottom="15dp"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="98dp"
             android:layout_height="120dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingEnd="10dp">
 
             <EditText
                 android:id="@+id/chooseName1"
@@ -32,6 +37,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/primaryLightColor"
+                android:elevation="2dp"
                 android:ems="10"
                 android:hint="@string/nameChange"
                 android:textAlignment="center"
@@ -43,6 +49,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/primaryLightColor"
+                android:elevation="2dp"
                 android:ems="10"
                 android:hint="@string/nameChange"
                 android:textAlignment="center"
@@ -54,6 +61,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/primaryLightColor"
+                android:elevation="2dp"
                 android:ems="10"
                 android:hint="@string/nameChange"
                 android:textAlignment="center"
@@ -71,6 +79,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/primaryLightColor"
+                android:elevation="2dp"
                 android:ems="10"
                 android:hint="@string/nameChange"
                 android:textAlignment="center"
@@ -82,6 +91,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/primaryLightColor"
+                android:elevation="2dp"
                 android:ems="10"
                 android:hint="@string/nameChange"
                 android:textAlignment="center"
@@ -93,6 +103,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@color/primaryLightColor"
+                android:elevation="2dp"
                 android:ems="10"
                 android:hint="@string/nameChange"
                 android:textAlignment="center"
@@ -104,9 +115,10 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="54dp"
-        android:orientation="horizontal"
-        android:layout_gravity="center_vertical|center_horizontal">
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/checkBoxChooseRed"
@@ -116,7 +128,9 @@
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginEnd="20dp"
             android:layout_weight="1"
-            android:background="@color/primaryColor"
+            android:background="@color/primaryLightColor"
+            android:elevation="2dp"
+            android:paddingRight="10dp"
             android:text="@string/red" />
 
         <CheckBox
@@ -127,6 +141,9 @@
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginStart="20dp"
             android:layout_weight="1"
+            android:background="@color/primaryLightColor"
+            android:elevation="2dp"
+            android:paddingRight="10dp"
             android:text="@string/green" />
     </LinearLayout>
 
@@ -144,8 +161,11 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_red_light"
-            android:text="@string/cancel" />
+            android:background="@color/noboxColor"
+            android:elevation="6dp"
+            android:text="@string/cancel"
+            android:textColor="@color/primaryLightColor"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/saveCreateMarker"
@@ -156,8 +176,10 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_green_light"
-            android:text="@string/save" />
+            android:background="@color/yesboxColor"
+            android:elevation="6dp"
+            android:text="@string/save"
+            android:textSize="18sp" />
 
     </LinearLayout>
 

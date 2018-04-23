@@ -14,25 +14,52 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tabs"
-        android:background="@color/common_google_signin_btn_text_dark_focused" />
+        android:background="@color/common_google_signin_btn_text_dark_focused" >
+
+    </android.support.v4.view.ViewPager>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
-        android:layout_height="46dp"
+        android:layout_height="60dp"
         android:layout_marginBottom="100dp"
         android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
 
+    <TextView
+        android:id="@+id/databaseNameTextView"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/button4"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:onClick="changeDataBaseName"
+        android:textAlignment="center"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="66dp"
+        android:layout_height="35dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="14dp"
+        android:background="@color/primaryColor"
+        android:elevation="2dp"
+        android:onClick="logoutButtonClicked"
+        android:text="@string/Logout"
+        android:textSize="10sp" />
+
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/toolbar2"
         android:layout_marginTop="-100dp"
         android:background="@color/primaryLightColor"
+        android:elevation="4dp"
         android:textSize="20sp">
 
     </android.support.design.widget.TabLayout>
@@ -48,27 +75,6 @@
         android:onClick="chooseImageClicked"
         android:visibility="invisible"
         app:srcCompat="@android:drawable/ic_menu_gallery" />
-
-    <Button
-        android:id="@+id/button4"
-        android:layout_width="66dp"
-        android:layout_height="35dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:elevation="10dp"
-        android:onClick="logoutButtonClicked"
-        android:text="@string/Logout"
-        android:textSize="10sp" />
-
-    <TextView
-        android:id="@+id/databaseNameTextView"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/toolbar2"
-        android:layout_centerHorizontal="true"
-        android:onClick="changeDataBaseName"
-        android:textAlignment="center"
-        android:textSize="24sp" />
 
 
 </RelativeLayout>

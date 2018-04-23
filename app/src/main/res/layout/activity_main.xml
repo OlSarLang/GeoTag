@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="100dp"
-        android:background="?attr/colorPrimary"
+        android:background="@color/primaryColor"
         android:elevation="6dp"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" />
@@ -32,8 +32,8 @@
         android:id="@+id/imageView4"
         android:layout_width="207dp"
         android:layout_height="89dp"
-        android:layout_alignEnd="@+id/signUpAsk"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:alpha="0.9"
         android:contentDescription="@string/app_name"
         android:elevation="6dp"
@@ -46,11 +46,12 @@
         android:layout_alignStart="@+id/signUpAsk"
         android:layout_alignTop="@+id/signInLayout"
         android:alpha="0.8"
-        android:background="@color/common_google_signin_btn_text_dark_default"
+        android:background="@color/primaryColor"
         android:elevation="6dp"
         android:onClick="signInButtonClicked"
         android:text="@string/title_activity_login"
         android:textAllCaps="false"
+        android:textColor="@color/primaryTextColor"
         android:textSize="24sp"
         android:visibility="visible" />
 
@@ -63,11 +64,12 @@
         android:layout_centerVertical="true"
         android:layout_marginTop="15dp"
         android:alpha="0.8"
-        android:background="@color/common_google_signin_btn_text_dark_default"
+        android:background="@color/primaryColor"
         android:elevation="6dp"
         android:onClick="signUpButtonClicked"
         android:text="@string/sign_up"
         android:textAllCaps="false"
+        android:textColor="@color/primaryTextColor"
         android:textSize="24sp"
         android:visibility="visible" />
 
@@ -87,9 +89,8 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:alpha="0.6"
-            android:background="@color/secondaryColor"
+            android:background="@color/primaryColor"
             android:contentDescription="@string/app_name"
-            app:srcCompat="@color/common_google_signin_btn_text_dark_default"
             tools:layout_editor_absoluteX="97dp"
             tools:layout_editor_absoluteY="82dp" />
 
@@ -115,6 +116,7 @@
                 android:layout_marginTop="10dp"
                 android:text="@string/prompt_email"
                 android:textAlignment="center"
+                android:textColor="@color/primaryTextColor"
                 android:textSize="18sp" />
 
             <EditText
@@ -138,6 +140,7 @@
                 android:layout_marginTop="20dp"
                 android:text="@string/prompt_password"
                 android:textAlignment="center"
+                android:textColor="@color/primaryTextColor"
                 android:textSize="18sp" />
 
             <EditText
@@ -161,7 +164,7 @@
                 android:layout_height="60dp"
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/common_google_signin_btn_text_dark_default"
+                android:background="@color/primaryLightColor"
                 android:elevation="6dp"
                 android:onClick="signInClicked"
                 android:text="@string/title_activity_login"
@@ -223,7 +226,7 @@
                 android:id="@+id/signUpEmail"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:background="@color/common_google_signin_btn_text_dark_default"
+                android:background="@color/primaryLightColor"
                 android:elevation="4dp"
                 android:hint="@string/prompt_email"
                 android:inputType="textEmailAddress"
@@ -246,7 +249,7 @@
                 android:id="@+id/signUpPassword"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:background="@color/common_google_signin_btn_text_dark_default"
+                android:background="@color/primaryLightColor"
                 android:elevation="4dp"
                 android:ems="10"
                 android:hint="@string/prompt_password"
@@ -263,7 +266,7 @@
                 android:layout_height="60dp"
                 android:layout_marginBottom="20dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/common_google_signin_btn_text_dark_default"
+                android:background="@color/primaryLightColor"
                 android:elevation="6dp"
                 android:onClick="signUpClicked"
                 android:text="@string/sign_up"

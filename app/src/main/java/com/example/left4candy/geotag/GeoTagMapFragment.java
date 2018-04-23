@@ -49,11 +49,14 @@ public class GeoTagMapFragment extends Fragment {
 
     private ToggleButton addMapMarkerButton;
 
+    private LatLng place;
+    private double placeLat;
+    private double placeLng;
     private double lat;
     private double lng;
-    private String id;
-    private DatabaseReference geoMarkerRef = mDatabase.child("Users").child(userID).child("geoMarkers").child(id);
-
+    private String newGeoMarkerId;
+    private DatabaseReference geoMarkerRef;
+    private DatabaseReference geoMarkerDatabaseRef = mDatabase.child("Users").child(userID).child("geoMarkers");
     private GoogleMap map;
     MapView mapView;
     View mView;
@@ -84,7 +87,7 @@ public class GeoTagMapFragment extends Fragment {
 
         mGeoMarkerList = new ArrayList<>();
 
-        geoMarkerRef.addValueEventListener(new ValueEventListener() {
+        geoMarkerDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mGeoMarkerList.clear();
@@ -93,10 +96,8 @@ public class GeoTagMapFragment extends Fragment {
                     mGeoMarkerList.add(geoMarker);
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
 
@@ -104,6 +105,15 @@ public class GeoTagMapFragment extends Fragment {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if(mGeoMarkerList.isEmpty()){
+            place = new LatLng(59.345396, 18.023425);
+        }else{
+            placeLat = mGeoMarkerList.get(0).getGeoMarkerLat();
+            placeLng = mGeoMarkerList.get(0).getGeoMarkerLong();
+            place = new LatLng(placeLat, placeLng);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 15));
         }
 
         mapView.getMapAsync(new OnMapReadyCallback() {
@@ -114,15 +124,7 @@ public class GeoTagMapFragment extends Fragment {
                 map.setMyLocationEnabled(true);
                 map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-                if(mGeoMarkerList.isEmpty()){
-                    LatLng nacka = new LatLng(59.345396, 18.023425);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(nacka, 13));
-                }else{
-                    double lat = mGeoMarkerList.get(0).getGeoMarkerLat();
-                    double lng = mGeoMarkerList.get(0).getGeoMarkerLong();
-                    LatLng firstInstance = new LatLng(lat, lng);
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(firstInstance, 15));
-                }
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 15));
                 map.getUiSettings().setMyLocationButtonEnabled(true);
 
                 map.setOnMapClickListener(new OnMapClickListener() {
@@ -143,7 +145,7 @@ public class GeoTagMapFragment extends Fragment {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(addMapMarkerButton.isChecked()) {
                     Log.d("Checked", "checked");
-                    addMapMarkerButton.setBackgroundResource(R.color.primaryColor);
+                    addMapMarkerButton.setBackgroundResource(R.color.primaryDarkColor);
                 }else{
                     addMapMarkerButton.setBackgroundResource(R.color.primaryLightColor);
                 }
@@ -215,8 +217,10 @@ public class GeoTagMapFragment extends Fragment {
                         geoMarker.setSecondField(secondField);
                         geoMarker.setThirdField(thirdField);
                         mGeoMarkerList.add(geoMarker);
+                        newGeoMarkerId = Integer.toString(geoMarker.getGeoMarkerId());
+                        geoMarkerRef = mDatabase.child("Users").child(userID).child("geoMarkers").child(newGeoMarkerId);
+
                         geoMarkerRef.setValue(geoMarker);
-                        id = Integer.toString(geoMarker.getGeoMarkerId());
 
                         Toast.makeText(getContext(), R.string.markeradded, Toast.LENGTH_SHORT).show();
                         addMapMarkerButton.setChecked(false);

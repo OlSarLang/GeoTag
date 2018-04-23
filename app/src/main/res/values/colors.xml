@@ -3,12 +3,14 @@
 <!--?xml version="1.0" encoding="UTF-8"?-->
 
     <resources>
-    <color name="primaryColor">#defaff</color>
+    <color name="primaryColor">#e1f5fe</color>
     <color name="primaryLightColor">#ffffff</color>
-    <color name="primaryDarkColor">#c7c7c7</color>
-    <color name="secondaryColor">#b2ebf2</color>
-    <color name="secondaryLightColor">#e5ffff</color>
-    <color name="secondaryDarkColor">#81b9bf</color>
+    <color name="primaryDarkColor">#afc2cb</color>
+    <color name="secondaryColor">#ffa726</color>
+    <color name="secondaryLightColor">#ffd95b</color>
+    <color name="secondaryDarkColor">#c77800</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
+    <color name="yesboxColor">#299a00</color>
+    <color name="noboxColor">#a10000</color>
 </resources>

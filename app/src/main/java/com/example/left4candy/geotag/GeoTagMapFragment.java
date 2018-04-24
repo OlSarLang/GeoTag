@@ -3,6 +3,7 @@ package com.example.left4candy.geotag;
 
 import android.app.AlertDialog;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import android.widget.ToggleButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -36,7 +38,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GeoTagMapFragment extends Fragment {
     private static final String TAG = "MapTabFragment";
@@ -48,10 +52,9 @@ public class GeoTagMapFragment extends Fragment {
     private DatabaseReference mDatabase = database.getReference();
 
     private List<GeoMarker> mGeoMarkerList;
+    private Map<String, Integer> markerList;
+    private List<Marker> mapMarkerList;
     private GeoMarker geoMarker;
-
-    private GeoMarker gm;
-    private Marker marker;
     private LatLng markerPos;
 
     private ToggleButton addMapMarkerButton;
@@ -62,11 +65,15 @@ public class GeoTagMapFragment extends Fragment {
     private double lat;
     private double lng;
     private String newGeoMarkerId;
+    private String oldGeoMarkerId;
     private DatabaseReference geoMarkerRef;
     private DatabaseReference geoMarkerDatabaseRef = mDatabase.child("Users").child(userID).child("geoMarkers");
     private GoogleMap map;
     MapView mapView;
     View mView;
+
+    private int height = 50;
+    private int width = 50;
 
     public GeoTagMapFragment(){
 
@@ -90,14 +97,27 @@ public class GeoTagMapFragment extends Fragment {
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
 
+        BitmapDrawable bitmapRed = (BitmapDrawable)getResources().getDrawable(R.drawable.red);
+        BitmapDrawable bitmapGreen = (BitmapDrawable)getResources().getDrawable(R.drawable.green);
+        BitmapDrawable bitmapBlue = (BitmapDrawable)getResources().getDrawable(R.drawable.blue);
+        Bitmap r = bitmapRed.getBitmap();
+        Bitmap g = bitmapGreen.getBitmap();
+        Bitmap b = bitmapBlue.getBitmap();
+        final Bitmap smallRed = Bitmap.createScaledBitmap(r, width, height, false);
+        final Bitmap smallGreen = Bitmap.createScaledBitmap(g, width, height, false);
+        final Bitmap smallBlue = Bitmap.createScaledBitmap(b, width, height, false);
+
         addMapMarkerButton = mView.findViewById(R.id.addMapMarkerButton);
 
         mGeoMarkerList = new ArrayList<>();
+        markerList = new HashMap<String, Integer>();
+        mapMarkerList = new ArrayList<Marker>();
 
         geoMarkerDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mGeoMarkerList.clear();
+                mapMarkerList.clear();
                 for(DataSnapshot children : dataSnapshot.getChildren()){
                     geoMarker = children.getValue(GeoMarker.class);
                     mGeoMarkerList.add(geoMarker);
@@ -105,12 +125,15 @@ public class GeoTagMapFragment extends Fragment {
                     markerPos = new LatLng(geoMarker.getGeoMarkerLat(), geoMarker.getGeoMarkerLong());
                     Log.d("reached", "Reached");
                     if(geoMarker.getGeoMarkerColor() == "green") {
-                        marker = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.green)));
+                        Marker mkr  = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromBitmap(smallGreen)).flat(true));
+                        mapMarkerList.add(mkr);
+                        markerList.put(mkr.getId(), geoMarker.getGeoMarkerId());
                     }else {
-                        marker = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.red)));
+                        Marker mkr = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromBitmap(smallRed)).flat(true));
+                        mapMarkerList.add(mkr);
+                        markerList.put(mkr.getId(), geoMarker.getGeoMarkerId());
                     }
                     Log.d("created", "Marker created");
-                    marker.setTag(0);
                 }
             }
             @Override
@@ -153,6 +176,15 @@ public class GeoTagMapFragment extends Fragment {
                         if(addMapMarkerButton.isChecked()){
                             addGeoMarker();
                         }
+                    }
+                });
+
+                map.setOnMarkerClickListener(new OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        int id = markerList.get(marker.getId());
+                        editGeoMarker(id);
+                        return false;
                     }
                 });
             }
@@ -254,20 +286,111 @@ public class GeoTagMapFragment extends Fragment {
         dialog.show();
     }
 
-    public void loadMarkers(){
-        //map.setOnMarkerClickListener(this);
-        for(int i = 0; i < mGeoMarkerList.size(); i++){
-            gm = mGeoMarkerList.get(i);
-            markerPos = new LatLng(gm.getGeoMarkerLat(), gm.getGeoMarkerLong());
-            Log.d("reached", "Reached");
-            if(gm.getGeoMarkerColor() == "green") {
-                marker = map.addMarker(new MarkerOptions().position(markerPos).title(gm.getGeoMarkerName()));
-            }else {
-                marker = map.addMarker(new MarkerOptions().position(markerPos).title(gm.getGeoMarkerName()));
-            }
-            Log.d("created", "Marker created");
-            marker.setTag(0);
+    public void editGeoMarker(final int id){
+
+        markerList.get(id);
+        Log.d("markerlistid", String.valueOf(id));
+        int x = 0;
+        for(int i = 0; mGeoMarkerList.get(i).getGeoMarkerId() < id; i++){
+            x = i;
         }
+        geoMarker = mGeoMarkerList.get(x);
+        Log.d("editmarker", String.valueOf(geoMarker.getGeoMarkerId()));
+        String gMC = geoMarker.getGeoMarkerColor();
+        geoMarker.setGeoMarkerId(id);
+        final int gMID = geoMarker.getGeoMarkerId();
+        double gMLng = geoMarker.getGeoMarkerLong();
+        double gMLat = geoMarker.getGeoMarkerLat();
+        String gMN = geoMarker.getGeoMarkerName();
+        String fF = geoMarker.getFirstField();
+        String fN = geoMarker.getFirstName();
+        String sF = geoMarker.getSecondField();
+        String sN = geoMarker.getSecondName();
+        String tF = geoMarker.getThirdField();
+        String tN = geoMarker.getThirdName();
+
+        final AlertDialog.Builder aBuilder = new AlertDialog.Builder(getContext());
+        View nView = getLayoutInflater().inflate(R.layout.dialogeditgeomarker, null);
+        final EditText editTopName = nView.findViewById(R.id.editTopName); editTopName.setText(gMN);
+        final EditText editNameOne = nView.findViewById(R.id.editName1); editNameOne.setText(fN);
+        final EditText editNameTwo = nView.findViewById(R.id.editName2); editNameTwo.setText(sN);
+        final EditText editNameThree = nView.findViewById(R.id.editName3); editNameThree.setText(tN);
+        final EditText editFieldOne = nView.findViewById(R.id.editField1); editFieldOne.setText(fF);
+        final EditText editFieldTwo = nView.findViewById(R.id.editField2); editFieldTwo.setText(sF);
+        final EditText editFieldThree = nView.findViewById(R.id.editField3); editFieldThree.setText(tF);
+        final CheckBox checkBoxEditRed = nView.findViewById(R.id.checkBoxEditRed);
+        final CheckBox checkBoxEditGreen = nView.findViewById(R.id.checkBoxEditGreen);
+        Button cancelEditMarker = nView.findViewById(R.id.cancelEditMarker);
+        Button saveEditMarker = nView.findViewById(R.id.saveEditMarker);
+
+
+        aBuilder.setView(nView);
+        final AlertDialog dialog = aBuilder.create();
+
+        Log.d("AlertDialogCreated", "Alert Dialog has been created");
+
+        cancelEditMarker.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        saveEditMarker.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                final String geoMarkerName;
+                String geoMarkerColor = "red";
+                final double geoMarkerLat = geoMarker.getGeoMarkerLat();
+                final double geoMarkerLong = geoMarker.getGeoMarkerLong();
+                final String firstName;
+                final String secondName;
+                final String thirdName;
+                final String firstField;
+                final String secondField;
+                final String thirdField;
+                if(!editTopName.getText().toString().isEmpty()){
+                    if(checkBoxEditGreen.isChecked() && !checkBoxEditRed.isChecked() || !checkBoxEditGreen.isChecked() && checkBoxEditRed.isChecked()){
+                        if(checkBoxEditGreen.isChecked()){
+                            geoMarkerColor = "green";
+                        }else if(checkBoxEditRed.isChecked()){
+                            geoMarkerColor = "red";
+                        }
+                        geoMarkerName = editTopName.getText().toString();
+                        firstName = editNameOne.getText().toString();
+                        secondName = editNameTwo.getText().toString();
+                        thirdName = editNameThree.getText().toString();
+                        firstField = editFieldOne.getText().toString();
+                        secondField = editFieldTwo.getText().toString();
+                        thirdField = editFieldThree.getText().toString();
+
+                        geoMarker = new GeoMarker(geoMarkerName, geoMarkerColor, lat, lng);
+                        geoMarker.setGeoMarkerLat(geoMarker.getGeoMarkerLat());
+                        geoMarker.setGeoMarkerLong(geoMarker.getGeoMarkerLong());
+                        geoMarker.setGeoMarkerName(geoMarker.getGeoMarkerName());
+                        geoMarker.setFirstName(firstName);
+                        geoMarker.setSecondName(secondName);
+                        geoMarker.setThirdName(thirdName);
+                        geoMarker.setFirstField(firstField);
+                        geoMarker.setSecondField(secondField);
+                        geoMarker.setThirdField(thirdField);
+                        //TODO RETRIEVE MARKER I CLICKED AND GET INFO
+                        oldGeoMarkerId = Integer.toString(gMID);
+                        geoMarkerRef = mDatabase.child("Users").child(userID).child("geoMarkers").child(oldGeoMarkerId);
+                        Log.d("Current Id", oldGeoMarkerId);
+                        geoMarkerRef.setValue(geoMarker);
+
+                        Toast.makeText(getContext(), R.string.markeradded, Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                    return;
+                }else{
+                    Toast.makeText(getContext(), R.string.edittitleempty, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+        });
+        dialog.show();
     }
 
     public boolean onMarkerClick(final Marker marker) {

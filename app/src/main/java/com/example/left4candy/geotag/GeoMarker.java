@@ -42,6 +42,7 @@ public class GeoMarker{
     public int getGeoMarkerId() {
         return geoMarkerId;
     }
+    public void setGeoMarkerId(int geoMarkerId){ this.geoMarkerId = geoMarkerId; }
 
     public String getGeoMarkerColor() {
         return geoMarkerColor;

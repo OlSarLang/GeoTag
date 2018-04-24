@@ -2,6 +2,7 @@ package com.example.left4candy.geotag;
 
 
 import android.app.AlertDialog;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,10 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,7 +40,6 @@ import java.util.List;
 
 public class GeoTagMapFragment extends Fragment {
     private static final String TAG = "MapTabFragment";
-    //HEJ DAVID BEHÖVER GÖRA EN SÅN HÄR KOMMENTAR SÅ ATT JAG KAN COMMITA
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
@@ -46,6 +49,10 @@ public class GeoTagMapFragment extends Fragment {
 
     private List<GeoMarker> mGeoMarkerList;
     private GeoMarker geoMarker;
+
+    private GeoMarker gm;
+    private Marker marker;
+    private LatLng markerPos;
 
     private ToggleButton addMapMarkerButton;
 
@@ -94,6 +101,16 @@ public class GeoTagMapFragment extends Fragment {
                 for(DataSnapshot children : dataSnapshot.getChildren()){
                     geoMarker = children.getValue(GeoMarker.class);
                     mGeoMarkerList.add(geoMarker);
+
+                    markerPos = new LatLng(geoMarker.getGeoMarkerLat(), geoMarker.getGeoMarkerLong());
+                    Log.d("reached", "Reached");
+                    if(geoMarker.getGeoMarkerColor() == "green") {
+                        marker = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.green)));
+                    }else {
+                        marker = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.red)));
+                    }
+                    Log.d("created", "Marker created");
+                    marker.setTag(0);
                 }
             }
             @Override
@@ -126,6 +143,7 @@ public class GeoTagMapFragment extends Fragment {
 
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 15));
                 map.getUiSettings().setMyLocationButtonEnabled(true);
+
 
                 map.setOnMapClickListener(new OnMapClickListener() {
                     @Override
@@ -236,6 +254,38 @@ public class GeoTagMapFragment extends Fragment {
         dialog.show();
     }
 
+    public void loadMarkers(){
+        //map.setOnMarkerClickListener(this);
+        for(int i = 0; i < mGeoMarkerList.size(); i++){
+            gm = mGeoMarkerList.get(i);
+            markerPos = new LatLng(gm.getGeoMarkerLat(), gm.getGeoMarkerLong());
+            Log.d("reached", "Reached");
+            if(gm.getGeoMarkerColor() == "green") {
+                marker = map.addMarker(new MarkerOptions().position(markerPos).title(gm.getGeoMarkerName()));
+            }else {
+                marker = map.addMarker(new MarkerOptions().position(markerPos).title(gm.getGeoMarkerName()));
+            }
+            Log.d("created", "Marker created");
+            marker.setTag(0);
+        }
+    }
+
+    public boolean onMarkerClick(final Marker marker) {
+
+        // Retrieve the data from the marker.
+        Integer clickCount = (Integer) marker.getTag();
+
+        // Check if a click count was set, then display the click count.
+        if (clickCount != null) {
+            clickCount = clickCount + 1;
+            marker.setTag(clickCount);
+        }
+
+        // Return false to indicate that we have not consumed the event and that we wish
+        // for the default behavior to occur (which is for the camera to move such that the
+        // marker is centered and for the marker's info window to open, if it has one).
+        return false;
+    }
     @Override
     public void onResume() {
         super.onResume();

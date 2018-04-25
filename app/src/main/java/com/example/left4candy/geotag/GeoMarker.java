@@ -2,7 +2,8 @@ package com.example.left4candy.geotag;
 
 
 public class GeoMarker{
-    private static int geoMarkerId;
+    private static int countId = 1;
+    private int geoMarkerId = 1;
     private String geoMarkerName;
     private String geoMarkerColor;
     private double geoMarkerLat;
@@ -22,7 +23,6 @@ public class GeoMarker{
         firstField = "Field One";
         secondField = "Field Two";
         thirdField = "Field Three";
-        geoMarkerId++;
     }
 
     public GeoMarker(String geoMarkerName, String geoMarkerColor, double geoMarkerLat, double geoMarkerLong){
@@ -36,8 +36,10 @@ public class GeoMarker{
         firstField = "Field One";
         secondField = "Field Two";
         thirdField = "Field Three";
-        geoMarkerId++;
     }
+
+    public int getCountId(){return countId;}
+    public void setCountId(int countId){ this.countId = countId;}
 
     public int getGeoMarkerId() {
         return geoMarkerId;

@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.common.util.CrashUtils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
@@ -50,6 +51,7 @@ public class GeoTagMapFragment extends Fragment {
     private String userID = user.getUid();
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference mDatabase = database.getReference();
+    private DatabaseReference currentDbIdRef = mDatabase.child("Users").child(userID).child("countId");
 
     private List<GeoMarker> mGeoMarkerList;
     private Map<String, Integer> markerList;
@@ -66,14 +68,15 @@ public class GeoTagMapFragment extends Fragment {
     private double lng;
     private String newGeoMarkerId;
     private String oldGeoMarkerId;
+    private int currentDbId;
     private DatabaseReference geoMarkerRef;
     private DatabaseReference geoMarkerDatabaseRef = mDatabase.child("Users").child(userID).child("geoMarkers");
     private GoogleMap map;
     MapView mapView;
     View mView;
 
-    private int height = 50;
-    private int width = 50;
+    private int height = 80;
+    private int width = 80;
 
     public GeoTagMapFragment(){
 
@@ -113,6 +116,8 @@ public class GeoTagMapFragment extends Fragment {
         markerList = new HashMap<String, Integer>();
         mapMarkerList = new ArrayList<Marker>();
 
+        currentDbIdRef.setValue(0);
+
         geoMarkerDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -120,6 +125,7 @@ public class GeoTagMapFragment extends Fragment {
                 mapMarkerList.clear();
                 markerList.clear();
                 map.clear();
+                currentDbId = 0;
                 for(DataSnapshot children : dataSnapshot.getChildren()){
                     geoMarker = children.getValue(GeoMarker.class);
 
@@ -129,11 +135,19 @@ public class GeoTagMapFragment extends Fragment {
                         Marker mkr  = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromBitmap(smallGreen)).flat(true));
                         mapMarkerList.add(mkr);
                         mGeoMarkerList.add(geoMarker);
+                        currentDbId += 1;
+                        geoMarker.setGeoMarkerId(currentDbId);
+                        geoMarker.setCountId(currentDbId);
+                        currentDbIdRef.setValue(currentDbId);
                         markerList.put(mkr.getId(), geoMarker.getGeoMarkerId());
-                    }else {
+                    }else{
                         Marker mkr = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromBitmap(smallRed)).flat(true));
                         mapMarkerList.add(mkr);
                         mGeoMarkerList.add(geoMarker);
+                        currentDbId += 1;
+                        geoMarker.setGeoMarkerId(currentDbId);
+                        geoMarker.setCountId(currentDbId);
+                        currentDbIdRef.setValue(currentDbId);
                         markerList.put(mkr.getId(), geoMarker.getGeoMarkerId());
                     }
                     Log.d("created", "Marker created");
@@ -264,6 +278,9 @@ public class GeoTagMapFragment extends Fragment {
                         thirdField = chooseFieldThree.getText().toString();
 
                         geoMarker = new GeoMarker(geoMarkerName, geoMarkerColor, lat, lng);
+                        geoMarker.setGeoMarkerColor(geoMarkerColor);
+                        geoMarker.setCountId(currentDbId);
+                        geoMarker.setGeoMarkerId(currentDbId);
                         geoMarker.setFirstName(firstName);
                         geoMarker.setSecondName(secondName);
                         geoMarker.setThirdName(thirdName);
@@ -290,19 +307,24 @@ public class GeoTagMapFragment extends Fragment {
         dialog.show();
     }
 
-    public void editGeoMarker(final int id){
+    public void editGeoMarker(final int id) {
 
-        Log.d("markerlistid", String.valueOf(id));
-        int x = 0;
-        for(int i = 0; mGeoMarkerList.get(i).getGeoMarkerId() < id; i++){
-            x = i-1;
-            Log.d("x", String.valueOf(x));
+
+        int index = -1;
+
+        for (int i = 0; i < mGeoMarkerList.size(); i++) {
+            if (  mGeoMarkerList.get(i).getGeoMarkerId() == id) {
+                index = i;
+            }
         }
-        geoMarker = mGeoMarkerList.get(x);
+
+
+        geoMarker = mGeoMarkerList.get(index);
         geoMarker.setGeoMarkerId(id);
         Log.d("editmarker", String.valueOf(geoMarker.getGeoMarkerId()));
         String gMC = geoMarker.getGeoMarkerColor();
         final int gMID = geoMarker.getGeoMarkerId();
+        final int oldCountId = geoMarker.getCountId();
         double gMLng = geoMarker.getGeoMarkerLong();
         double gMLat = geoMarker.getGeoMarkerLat();
         String gMN = geoMarker.getGeoMarkerName();
@@ -322,8 +344,8 @@ public class GeoTagMapFragment extends Fragment {
         final EditText editFieldOne = nView.findViewById(R.id.editField1); editFieldOne.setText(fF);
         final EditText editFieldTwo = nView.findViewById(R.id.editField2); editFieldTwo.setText(sF);
         final EditText editFieldThree = nView.findViewById(R.id.editField3); editFieldThree.setText(tF);
-        final CheckBox checkBoxEditRed = nView.findViewById(R.id.checkBoxEditRed);
-        final CheckBox checkBoxEditGreen = nView.findViewById(R.id.checkBoxEditGreen);
+        final CheckBox checkBoxEditRed = nView.findViewById(R.id.checkBoxEditRed); if (geoMarker.getGeoMarkerColor() == "red"){checkBoxEditRed.setChecked(true);}
+        final CheckBox checkBoxEditGreen = nView.findViewById(R.id.checkBoxEditGreen); if (geoMarker.getGeoMarkerColor() == "green"){checkBoxEditRed.setChecked(true);}
         Button cancelEditMarker = nView.findViewById(R.id.cancelEditMarker);
         Button saveEditMarker = nView.findViewById(R.id.saveEditMarker);
 
@@ -368,10 +390,12 @@ public class GeoTagMapFragment extends Fragment {
                         secondField = editFieldTwo.getText().toString();
                         thirdField = editFieldThree.getText().toString();
 
-                        geoMarker = new GeoMarker(geoMarkerName, geoMarkerColor, lat, lng);
+                        geoMarker.setCountId(oldCountId-1);
+                        geoMarker.setGeoMarkerId(id-1);
                         geoMarker.setGeoMarkerLat(geoMarker.getGeoMarkerLat());
                         geoMarker.setGeoMarkerLong(geoMarker.getGeoMarkerLong());
-                        geoMarker.setGeoMarkerName(geoMarker.getGeoMarkerName());
+                        geoMarker.setGeoMarkerName(geoMarkerName);
+                        geoMarker.setGeoMarkerColor(geoMarkerColor);
                         geoMarker.setFirstName(firstName);
                         geoMarker.setSecondName(secondName);
                         geoMarker.setThirdName(thirdName);
@@ -379,10 +403,11 @@ public class GeoTagMapFragment extends Fragment {
                         geoMarker.setSecondField(secondField);
                         geoMarker.setThirdField(thirdField);
                         //TODO RETRIEVE MARKER I CLICKED AND GET INFO
-                        oldGeoMarkerId = Integer.toString(gMID);
+                        oldGeoMarkerId = Integer.toString(oldCountId-1);
                         geoMarkerRef = mDatabase.child("Users").child(userID).child("geoMarkers").child(oldGeoMarkerId);
                         Log.d("Current Id", oldGeoMarkerId);
                         geoMarkerRef.setValue(geoMarker);
+                        currentDbIdRef.setValue(geoMarker.getCountId());
 
                         Toast.makeText(getContext(), R.string.markeradded, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();

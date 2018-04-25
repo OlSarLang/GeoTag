@@ -118,19 +118,22 @@ public class GeoTagMapFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mGeoMarkerList.clear();
                 mapMarkerList.clear();
+                markerList.clear();
+                map.clear();
                 for(DataSnapshot children : dataSnapshot.getChildren()){
                     geoMarker = children.getValue(GeoMarker.class);
-                    mGeoMarkerList.add(geoMarker);
 
                     markerPos = new LatLng(geoMarker.getGeoMarkerLat(), geoMarker.getGeoMarkerLong());
                     Log.d("reached", "Reached");
                     if(geoMarker.getGeoMarkerColor() == "green") {
                         Marker mkr  = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromBitmap(smallGreen)).flat(true));
                         mapMarkerList.add(mkr);
+                        mGeoMarkerList.add(geoMarker);
                         markerList.put(mkr.getId(), geoMarker.getGeoMarkerId());
                     }else {
                         Marker mkr = map.addMarker(new MarkerOptions().position(markerPos).title(geoMarker.getGeoMarkerName()).icon(BitmapDescriptorFactory.fromBitmap(smallRed)).flat(true));
                         mapMarkerList.add(mkr);
+                        mGeoMarkerList.add(geoMarker);
                         markerList.put(mkr.getId(), geoMarker.getGeoMarkerId());
                     }
                     Log.d("created", "Marker created");
@@ -183,6 +186,7 @@ public class GeoTagMapFragment extends Fragment {
                     @Override
                     public boolean onMarkerClick(Marker marker) {
                         int id = markerList.get(marker.getId());
+                        Log.d("id", String.valueOf(id));
                         editGeoMarker(id);
                         return false;
                     }
@@ -288,16 +292,16 @@ public class GeoTagMapFragment extends Fragment {
 
     public void editGeoMarker(final int id){
 
-        markerList.get(id);
         Log.d("markerlistid", String.valueOf(id));
         int x = 0;
         for(int i = 0; mGeoMarkerList.get(i).getGeoMarkerId() < id; i++){
-            x = i;
+            x = i-1;
+            Log.d("x", String.valueOf(x));
         }
         geoMarker = mGeoMarkerList.get(x);
+        geoMarker.setGeoMarkerId(id);
         Log.d("editmarker", String.valueOf(geoMarker.getGeoMarkerId()));
         String gMC = geoMarker.getGeoMarkerColor();
-        geoMarker.setGeoMarkerId(id);
         final int gMID = geoMarker.getGeoMarkerId();
         double gMLng = geoMarker.getGeoMarkerLong();
         double gMLat = geoMarker.getGeoMarkerLat();

@@ -51,10 +51,6 @@ public class GeoTagActivity extends AppCompatActivity {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private static final int PICK_IMAGE_REQUEST = 1234;
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference mStorage = storage.getReference();
-    FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference mDatabase = database.getReference();
 
     private static final int GALLERY_INTENT = 2;
     private Uri filePath;
@@ -66,6 +62,10 @@ public class GeoTagActivity extends AppCompatActivity {
 
     FirebaseUser user = mAuth.getCurrentUser();
     private String userID = user.getUid();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference mStorage = storage.getReference().child(userID);
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference mDatabase = database.getReference();
     private DatabaseReference titleNameRef = mDatabase.child("Users").child(userID).child("title");
 
     LocationRequest locationRequest;

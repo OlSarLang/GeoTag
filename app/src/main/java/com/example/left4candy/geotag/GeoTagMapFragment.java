@@ -390,8 +390,7 @@ public class GeoTagMapFragment extends Fragment {
                         secondField = editFieldTwo.getText().toString();
                         thirdField = editFieldThree.getText().toString();
 
-                        geoMarker.setCountId(oldCountId-1);
-                        geoMarker.setGeoMarkerId(id-1);
+                        geoMarker.setGeoMarkerId(id);
                         geoMarker.setGeoMarkerLat(geoMarker.getGeoMarkerLat());
                         geoMarker.setGeoMarkerLong(geoMarker.getGeoMarkerLong());
                         geoMarker.setGeoMarkerName(geoMarkerName);
@@ -402,12 +401,11 @@ public class GeoTagMapFragment extends Fragment {
                         geoMarker.setFirstField(firstField);
                         geoMarker.setSecondField(secondField);
                         geoMarker.setThirdField(thirdField);
-                        //TODO RETRIEVE MARKER I CLICKED AND GET INFO
-                        oldGeoMarkerId = Integer.toString(oldCountId-1);
+
+                        oldGeoMarkerId = String.valueOf(gMID-1);
                         geoMarkerRef = mDatabase.child("Users").child(userID).child("geoMarkers").child(oldGeoMarkerId);
                         Log.d("Current Id", oldGeoMarkerId);
                         geoMarkerRef.setValue(geoMarker);
-                        currentDbIdRef.setValue(geoMarker.getCountId());
 
                         Toast.makeText(getContext(), R.string.markeradded, Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
